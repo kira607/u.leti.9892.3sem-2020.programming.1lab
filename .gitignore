@@ -35,3 +35,8 @@
 cmake-build-debug/
 .vscode/
 out/
+
+report/report_lr1.aux
+report/report_lr1.log
+report/report_lr1.pdf
+report/report_lr1.synctex.gz
