@@ -1,114 +1,175 @@
 \section*{Описание пользовательских функций}
 
 \subsection*{DeleteWordsWithChar}
-void DeleteWordsWithChar(char *strings[], int lines\_number, char bad\_char);
 
-Функция по удалению слов, содержащих заданный символ, из массива строк. Принимает указатель на массив строк, количество строк и символ, который должен содержаться в словах для удаления.
+\begin{lstlisting}
+	void DeleteWordsWithChar(char *strings[], int lines_number, char bad_char);
+\end{lstlisting}
+
+Функция по удалению слов, содержащих заданный символ, из массива строк. 
+Принимает указатель на массив строк, 
+количество строк и символ, который должен содержаться в словах для удаления.
 
 Алгоритм работы функции:
 
-Цикл по line от 0 до lines\_number
-	\begin{itemize}
-		\item Записываем указатель на текущую строку в string
-		\item Выделяем память под новую строку и записываем указатель в new\_string
-		\item Выделяем память под слово и записываем указатель в word
-		\item Если IfStringContainsChar для текущей строки возвращает \textbf{false}, сбрасываем текущую итерацию цикла
-		\item Цикл по character\_pos от 0 до длины string
+\begin{itemize}
+	\item Цикл по \verb|line| от \verb|0| до \verb|lines_number|
 		\begin{itemize}
-			\item Записываем текущий символ в character
-			\item Если character == ' ' или character == '\textbackslash n' или character == EOF или character == '\textbackslash 0'
-			\begin{itemize}
-				\item Если IfStringContainsChar возвращает \textbf{true} для word
-				\subitem strcat(new\_string, word)
-				\subitem strcat(new\_string, character)
-				\item Освободить указатель word
-				\item Выделить память под слово и записать указатель в word
-				\item Сбросить текущую итерацию цикла
-			\end{itemize}
-			\item Иначе
-			\subitem strcat(word, character);
+			\item \verb|char *string = strings[line];|
+			\item \verb|char *new_string = (char*)calloc(sizeof(char), strlen(string));|
+			\item \verb|char *word = (char*)calloc(sizeof(char), strlen(string));|
+			\item Если \verb|!IfStringContainsChar(string, bad_char)|
+				\begin{itemize}
+					\item \verb|continue;|
+				\end{itemize}
+			\item Цикл по \verb|character_pos| от \verb|0| до \verb|strlen(string)|
+				\begin{itemize}
+					\item \verb|char character = string[character_pos];|
+					\item Если \verb|character == ' ' |||
+							   \verb| character == '\n' |||
+							   \verb| character == EOF |||
+							   \verb| character == '\0'|
+						\begin{itemize}
+							\item Если \verb|!IfStringContainsChar(word, bad_char)|
+							\item \verb|    strcat(new_string, word);|
+							\item \verb|    strcat(new_string, character);|
+							\item \verb|free(word);|
+							\item \verb|word = (char*)calloc(sizeof(char), strlen(string));|
+							\item \verb|continue;|
+						\end{itemize}
+					\item Иначе
+						\begin{itemize}
+							\item \verb|strcat(word, character);|
+						\end{itemize}
+				\end{itemize}
+			\item \verb|free(strings[line]);|
+			\item Если \verb|new_string[strlen(new_string) - 1] != '\n'|
+				\begin{itemize}
+					\item \verb|strcat(new_string, '\n');|
+				\end{itemize}
+			\item \verb|strings[line] = new_string;|
 		\end{itemize}
-	\item Освобождаем указатель на проверенную строку
-	\item Если послений символ строки не \textbackslash n, добавляем \textbackslash n в конец
-	\item Присваиваем указателю адрес ячейки памяти, на которую указывает new\_string
-	\end{itemize}
+\end{itemize}
 
 \subsection*{ReadFromFile}
-int ReadFromFile(const std::string\& file\_name, char **\&strings);
+
+\begin{lstlisting}
+	int ReadFromFile(const std::string& file_name, char **&strings);
+\end{lstlisting}
 
 Функция для чтения строк из файла. 
 
-Принимает имя файла и ссылку на указатель на указатель на char (необходимо, чтобы модифицировать оригинальный указатель). 
+Принимает имя файла и 
+ссылку на указатель на указатель на char 
+(необходимо, чтобы модифицировать оригинальный указатель). 
 
 Возвращает количество прочитанных строк.
 
 Алгоритм работы функции:
 
 \begin{itemize}
-	\item Пытемся открыть файл. В случаем провала возвращаем -1
-	\item Задаём константы string\_chunk\_len = 10, lines\_chunk\_len = 3
-	\item Выделяем память под массив строк длинной lines\_chunk\_len
-	\item Выделяем память под нулевую строку длинной string\_chunk\_len
-	\item Создаём место под считываемый символ
-	\item Пока считанный из файла символ в current\_char не равен EOF
-	\begin{itemize}
-		\item ++line\_size
-		\item Если длина строки line\_size кратна string\_chunk\_len, расширяем текущую строку на string\_chunk\_len
-		\item Записываем считанный символ в текущую строку.
-		\item Если считанный символ == \textbackslash n
+    \item \verb|FILE *input_file;|
+	\item Если \verb|(input_file = fopen(file_name.c_str(), "r")) == nullptr|
 		\begin{itemize}
-			\item Записываем символ конца строки в текущую строку
-			\item line\_size = 0
-			\item ++line
-			\item Если размер массива line кратен lines\_chunk\_len, расширяем массив строк на lines\_chunk\_len
-			\item Выделяем память под нулевую строку длинной string\_chunk\_len
+			\item \verb|std::cout << "Could not open \"" << file_name << "\"\n";|
+			\item \verb|return -1;|
 		\end{itemize}
-	\end{itemize}
-	\item Закрываем файл
-	\item Возвращаем количество считанных строк
+    \item \verb|const int string_chunk_len = 10, lines_chunk_len = 3;|
+    \item \verb|int line = 0;|
+    \item \verb|int line_size = 0;|
+    \item \verb|strings = (char**)malloc(sizeof(char*) * lines_chunk_len);|
+    \item \verb|strings[0] = (char*)malloc(sizeof(char) * string_chunk_len);|
+    \item \verb|char current_char;|
+	\item Пока \verb|(current_char = static_cast<char>(fgetc(input_file))) != EOF|
+		\begin{itemize}
+			\item \verb|++line_size;|
+			\item Если \verb|line_size % string_chunk_len == 0|
+				\begin{itemize}
+					\item \verb|strings[line] = |\\
+					\verb|(char*)realloc(strings[line], sizeof(char) *|\\
+					\verb|(line_size + string_chunk_len));|
+				\end{itemize}
+			\item \verb|strcat(strings[line], current_char);|
+			\item Если \verb|current_char == '\n'|
+				\begin{itemize}
+					\item \verb|strcat(strings[line], '\0');|
+					\item \verb|line_size -= line_size;|
+					\item \verb|++line;|
+					\item Если \verb|line % lines_chunk_len == 0|
+					\subitem \verb|strings = |\\
+					\verb|(char**)realloc(strings, sizeof(char*) *|\\
+					\verb|(line + lines_chunk_len));|
+					\item \verb|strings[line] = (char*)calloc(string_chunk_len, sizeof(char));|
+				\end{itemize}
+		\end{itemize}
+    \item \verb|fclose(input_file);|
+    \item \verb|return line_size ? line+1 : line;|
 \end{itemize}
 
 \subsection*{WriteInFile}
-void WriteInFile(const std::string\&, char **, char **, char, int);
+
+\begin{lstlisting}
+	void WriteInFile(const std::string& file_name, char **original_strings, char **strings, char bad_char, int lines_number)
+\end{lstlisting}
 
 Функция для записи массива строк в файл.
 
-Принимает указатель на массив оригинальных строк, указатель на массив изменённых строк, символ, который содержался в удалённых словах и количество строк.
+Принимает указатель на массив оригинальных строк, 
+указатель на массив изменённых строк, символ, 
+который содержался в удалённых словах и количество строк.
 
 Алгоритм работы функции:
 
 \begin{itemize}
-	\item Пытемся открыть файл. В случаем провала возвращаемся
-	\item Записываем в файл оригинальные строки
-	\item Записываем в файл совершённую операцию
-	\item Записываем в файл параметры операции
-	\item Записываем в файл модифицированные строки
-	\item Закрываем файл
+	\item \verb|FILE* output_file = nullptr;|
+    \item Если \verb|(output_file = fopen(file_name.c_str(), "w")) == nullptr|
+    \item \verb|    std::cout << "Could not open \"" << file_name << "\"\n";|
+    \item \verb|    return;|
+	\item Цикл по \verb|line| от \verb|0| до \verb|lines_number|
+		\begin{itemize}
+			\item \verb|fputs(original_strings[line], output_file);|
+		\end{itemize}
+    \item \verb|fputs("\n\nOperation: Delete words with a specific character\n", output_file);|
+    \item \verb|fputs("Parameters: ", output_file);|
+    \item \verb|fputc(bad_char, output_file);|
+    \item \verb|fputs("\n\n", output_file);|
+	\item Цикл по \verb|line| от \verb|0| до \verb|lines_number|
+		\begin{itemize}
+			\item \verb|fputs(strings[line], output_file);|
+		\end{itemize}
+    \item \verb|fclose(output_file);|
 \end{itemize}
 
 \subsection*{IfStringContainsChar}
-bool IfStringContainsChar(char* string, char bad\_char);
+
+\begin{lstlisting}
+	bool IfStringContainsChar(char* string, char bad_char)
+\end{lstlisting}
 
 Функция для проверки содержания в строке заданного символа.
 
 Принимает указатель на строку и проверяемый символ.
 
-Возвращает true, если символ найден, false в противном случае.
+Возвращает \textbf{true}, если символ найден, \textbf{false} в противном случае.
 
 Алгоритм работы функции:
 
 \begin{itemize}
-	\item Записываем указатель на строку в word\_ptr
-	\item Пока значение word\_ptr не 0
-	\begin{itemize}
-		\item Если strchr(\&bad\_char, *word\_ptr) Возвращаем \textbf{true}
-		\item ++word\_ptr
-	\end{itemize}
-	\item Возвращаем \textbf{false}
+    \item \verb|char *word_ptr = string;|
+	\item Пока \verb|*word_ptr|
+		\begin{itemize}
+			\item Если \verb|strchr(&bad_char, *word_ptr)|
+			\subitem \verb|return true;|
+			\item \verb|++word_ptr;|
+		\end{itemize}
+    \item \verb|return false;|
 \end{itemize}
 
 \subsection*{PrintArrayOfStrings}
-void PrintArrayOfStrings(char **strings, int lines\_number);
+
+\begin{lstlisting}
+	void PrintArrayOfStrings(char **strings, int lines\_number);
+\end{lstlisting}
 
 Функция для печати массива строк.
 
@@ -117,11 +178,17 @@ void PrintArrayOfStrings(char **strings, int lines\_number);
 Алгоритм работы функции:
 
 \begin{itemize}
-	\item Циклом по line от 0 до lines\_number печатаем строку
+	\item Цикл по \verb|line| от \verb|0| до \verb|lines_number|
+	\begin{itemize}
+		\item \verb|printf("%s", strings[line]);|
+	\end{itemize}
 \end{itemize}
 
 \subsection*{strcat}
-char *strcat (char *dest, char character);
+
+\begin{lstlisting}
+	char *strcat (char *dest, char character);
+\end{lstlisting}
 
 Перегрузка функции strcat из strings.h.
 
@@ -132,10 +199,10 @@ char *strcat (char *dest, char character);
 Алгоритм работы функции:
 
 \begin{itemize}
-	\item Выделяем память под 2 символа (char\_ptr)
-	\item В первую ячейку записываем character
-	\item Во вторую ячейку записываем \textbackslash 0
-	\item strcat(dest, char\_ptr)
-	\item Освобождаем память char\_ptr
-	\item Возвращаем указатель на dest
+	\item \verb|char* char_ptr = (char*)malloc(sizeof(char)*2);|
+    \item \verb|*char_ptr = character;|
+    \item \verb|*(char_ptr + 1) = '\0';|
+    \item \verb|strcat(dest, char_ptr);|
+    \item \verb|free(char_ptr);|
+    \item \verb|return dest;|
 \end{itemize}

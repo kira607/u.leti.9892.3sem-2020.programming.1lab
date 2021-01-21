@@ -1,11 +1,34 @@
 \section*{Алгоритм программы}
 
 \begin{itemize}
-    \item Вызываем ReadFromFile
-    \item Проверяем, что файл считан успешно
-    \item Переписываем считанные данные в original\_strings
-    \item Считываем с клавиатуры символ
-    \item Вызываем DeleteWordsWithChar
-    \item Печатаем результат с помощью PrintArrayOfStrings
-    \item Записываем Изменения в файл с помощью WriteInFile
+    \item \verb|char *input_file_name = (char*)"../input.txt";|
+    \item \verb|char **strings{};|
+    \item \verb|int lines_number = ReadFromFile(input_file_name, strings);|
+    \item Если \verb|lines_number == -1 |||\verb| strings == nullptr|
+        \begin{itemize}
+            \item Вывод сообщения об ошибке
+            \item \verb|return 1;|
+        \end{itemize}
+    \item \verb|char **original_strings;|
+    \item \verb|original_strings = (char**)malloc(sizeof(char*)*lines_number);|
+    \item \verb|for (int line = 0; line < lines_number; ++line)|
+        \begin{itemize}
+            \item \verb|original_strings[line] = |\\
+            \verb|(char*)malloc(sizeof(char)*strlen(strings[line]));|
+            \item \verb|strcpy(original_strings[line], strings[line]);|
+        \end{itemize}
+    \item \verb|char bad_char;|
+    \item \verb|std::cout << "\nInput char:";|
+    \item \verb|std::cin >> bad_char;|
+    \item Вывод сообщения о начале удаления
+    \item \verb|DeleteWordsWithChar(strings, lines_number, bad_char);|
+    \item Вывод стартового ограничителя
+    \item \verb|PrintArrayOfStrings(strings, lines_number);|
+    \item Вывод конечного ограничителя
+    \item Вывод сообщения о начале записи в файл
+    \item \verb|char *output_file_name = (char*)"../output.txt";|
+    \item \verb|WriteInFile(output_file_name, original_strings,|\\
+    \verb|strings, bad_char, lines_number);|
+    \item Вывод сообщения о конце записи в файл
+    \item \verb|return 0;|
 \end{itemize}

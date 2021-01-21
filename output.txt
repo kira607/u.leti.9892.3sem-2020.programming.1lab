@@ -1,19 +1,21 @@
-asdf
-uvb sakjdfh hkgv alkjs
-sdub jjjjf
-hfh
-duhgeb
-9238 sugy 83h7v1
-afsdljfh
+line 0 line 0 line 0
+line 1
+line 2
+line 3 line3
+line 4 line4
+qwertyuiopasdfghjklzxcvbnm
+1234567890
+this line contains many words
 
 
 Operation: Delete words with a specific character
-Parameters: f
+Parameters: ,
 
-
-uvb hkgv alkjs
-sdub 
-
-duhgeb
-9238 sugy 83h7v1
-
+line 0 line 0 line 0
+line 1
+line 2
+line 3 line3
+line 4 line4
+qwertyuiopasdfghjklzxcvbnm
+1234567890
+this line contains many words
